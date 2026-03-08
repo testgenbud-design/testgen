@@ -689,9 +689,9 @@
         <div class="form-desc">Fill in the details below. Your test will appear on this page instantly.</div>
       </div>
 
-      <!-- Replace YOUR_N8N_WEBHOOK_URL with your actual webhook URL -->
+      <!-- Replace https://testgenbud.app.n8n.cloud/webhook/784ad307-2557-47ff-810f-1da294633360 with your actual webhook URL -->
       <div class="webhook-note" id="webhookNote">
-        ⚠️ &nbsp;<span>Demo mode — replace <code>YOUR_N8N_WEBHOOK_URL</code> in the page source with your N8N webhook URL to go live.</span>
+        ⚠️ &nbsp;<span>Demo mode — replace <code>https://testgenbud.app.n8n.cloud/webhook/784ad307-2557-47ff-810f-1da294633360</code> in the page source with your N8N webhook URL to go live.</span>
       </div>
 
       <form id="testForm" onsubmit="return false;">
@@ -828,11 +828,11 @@
 
 <script>
   // ── CONFIG — replace this with your actual N8N webhook URL ──────────────
-  const WEBHOOK_URL = 'YOUR_N8N_WEBHOOK_URL';
+  const WEBHOOK_URL = 'https://testgenbud.app.n8n.cloud/webhook/784ad307-2557-47ff-810f-1da294633360';
   // ────────────────────────────────────────────────────────────────────────
 
   // Hide the demo warning once webhook is set
-  if (WEBHOOK_URL !== 'YOUR_N8N_WEBHOOK_URL') {
+  if (WEBHOOK_URL !== 'https://testgenbud.app.n8n.cloud/webhook/784ad307-2557-47ff-810f-1da294633360') {
     document.getElementById('webhookNote').style.display = 'none';
   }
 
@@ -864,8 +864,8 @@
       }
     }
 
-    if (WEBHOOK_URL === 'YOUR_N8N_WEBHOOK_URL') {
-      showError('Webhook URL not configured yet. Replace YOUR_N8N_WEBHOOK_URL in the source code with your N8N webhook URL.');
+    if (WEBHOOK_URL === 'https://testgenbud.app.n8n.cloud/webhook/784ad307-2557-47ff-810f-1da294633360') {
+      showError('Webhook URL not configured yet. Replace https://testgenbud.app.n8n.cloud/webhook/784ad307-2557-47ff-810f-1da294633360 in the source code with your N8N webhook URL.');
       return;
     }
 
