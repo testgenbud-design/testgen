@@ -1,304 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TestGen AI — JEE & NEET Test Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
+<style>
+  /* ── RESET & BASE ──────────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy:    #0D1B35;
+    --navy2:   #162244;
+    --navy3:   #1E2D54;
+    --gold:    #F5A623;
+    --gold2:   #FFB940;
+    --gold-dim:#7A5010;
+    --cream:   #FDF8EE;
+    --white:   #FFFFFF;
+    --muted:   #8C9BBF;
+    --border:  rgba(255,255,255,0.08);
+    --card:    rgba(255,255,255,0.04);
+    --success: #22C55E;
+    --error:   #EF4444;
+    --font-head: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--navy);
+    color: var(--white);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── BACKGROUND TEXTURE ─────────────────────────────────────────── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 10% 0%, rgba(245,166,35,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 90% 100%, rgba(30,45,84,0.8) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── GRID OVERLAY ──────────────────────────────────────────────── */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── LAYOUT ────────────────────────────────────────────────────── */
+  .wrap { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; padding: 0 24px; }
+
+  /* ── NAV ───────────────────────────────────────────────────────── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 18px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(13,27,53,0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    font-family: var(--font-head);
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo-dot {
+    width: 8px; height: 8px;
+    background: var(--gold);
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  .badge {
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    background: rgba(245,166,35,0.12);
+    border: 1px solid rgba(245,166,35,0.3);
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+
+  /* ── HERO ──────────────────────────────────────────────────────── */
+  .hero {
+    padding: 160px 0 80px;
+    text-align: center;
+  }
+
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease forwards 0.1s;
+  }
+
+  .hero-eyebrow::before, .hero-eyebrow::after {
+    content: '';
+    display: block;
+    width: 30px;
+    height: 1px;
+    background: var(--gold);
+    opacity: 0.5;
+  }
+
+  h1 {
+    font-family: var(--font-head);
+    font-size: clamp(40px, 6vw, 68px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -2px;
+    color: var(--white);
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.2s;
+  }
+
+  h1 span {
+    background: linear-gradient(135deg, var(--gold), var(--gold2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-sub {
+    font-size: 18px;
+    font-weight: 300;
+    color: var(--muted);
+    max-width: 520px;
+    margin: 0 auto 20px;
+    line-height: 1.7;
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.3s;
+  }
+
+  .hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 48px;
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.4s;
+  }
+
+  .stat { text-align: center; }
+  .stat-num {
+    font-family: var(--font-head);
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* ── FORM CARD ─────────────────────────────────────────────────── */
+  .form-section {
+    padding: 0 0 80px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.5s;
+  }
+
+  .form-card {
+    background: var(--navy2);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 48px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .form-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+
+  .form-header {
+    margin-bottom: 40px;
+  }
+
+  .form-title {
+    font-family: var(--font-head);
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 6px;
+  }
+
+  .form-desc { font-size: 14px; color: var(--muted); }
+
+  /* ── GRID ──────────────────────────────────────────────────────── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+  .full { grid-column: 1 / -1; }
+
+  @media (max-width: 640px) {
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    nav { padding: 16px 20px; }
+    .form-card { padding: 28px 20px; }
+    .hero-stats { gap: 20px; }
+    .stat-num { font-size: 24px; }
+  }
+
+  /* ── FIELD ─────────────────────────────────────────────────────── */
+  .field { display: flex; flex-direction: column; gap: 8px; }
+
+  label {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  input, select {
+    width: 100%;
+    padding: 14px 18px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    color: var(--white);
+    font-family: var(--font-body);
+    font-size: 15px;
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238C9BBF' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    padding-right: 40px;
+    cursor: pointer;
+  }
+
+  select option {
+    background: var(--navy2);
+    color: var(--white);
+  }
+
+  input::placeholder { color: rgba(140,155,191,0.5); }
+
+  input:focus, select:focus {
+    border-color: rgba(245,166,35,0.5);
+    background: rgba(245,166,35,0.05);
+    box-shadow: 0 0 0 3px rgba(245,166,35,0.1);
+  }
+
+  input:hover, select:hover {
+    border-color: rgba(255,255,255,0.2);
+  }
+
+  /* ── DIVIDER ───────────────────────────────────────────────────── */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 32px 0;
+  }
+
+  /* ── BUTTON ────────────────────────────────────────────────────── */
+  .btn-generate {
+    width: 100%;
+    padding: 18px 32px;
+    background: linear-gradient(135deg, var(--gold), var(--gold2));
+    border: none;
+    border-radius: 14px;
+    color: var(--navy);
+    font-family: var(--font-head);
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-generate::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .btn-generate:hover::after { opacity: 1; }
+
+  .btn-generate:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(245,166,35,0.35);
+  }
+
+  .btn-generate:active { transform: translateY(0); }
+
+  .btn-generate:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .btn-icon { font-size: 20px; }
+
+  /* ── LOADING ───────────────────────────────────────────────────── */
+  .loading-bar {
+    display: none;
+    height: 3px;
+    background: rgba(245,166,35,0.15);
+    border-radius: 3px;
+    margin-top: 20px;
+    overflow: hidden;
+  }
+
+  .loading-bar.active { display: block; }
+
+  .loading-bar-inner {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--gold2));
+    border-radius: 3px;
+    animation: loading 2s ease-in-out infinite;
+  }
+
+  @keyframes loading {
+    0% { width: 0%; margin-left: 0; }
+    50% { width: 70%; margin-left: 15%; }
+    100% { width: 0%; margin-left: 100%; }
+  }
+
+  .loading-status {
+    display: none;
+    text-align: center;
+    margin-top: 16px;
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  .loading-status.active { display: block; }
+
+  .status-dot {
+    display: inline-block;
+    width: 6px; height: 6px;
+    background: var(--gold);
+    border-radius: 50%;
+    margin-right: 8px;
+    animation: blink 1s ease-in-out infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.2; }
+  }
+
+  /* ── RESULT ────────────────────────────────────────────────────── */
+  .result-section {
+    display: none;
+    margin-top: 40px;
+    animation: fadeUp 0.5s ease forwards;
+  }
+
+  .result-section.visible { display: block; }
+
+  .result-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .result-title-group { display: flex; align-items: center; gap: 12px; }
+
+  .result-title {
+    font-family: var(--font-head);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .result-badge {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--success);
+    background: rgba(34,197,94,0.12);
+    border: 1px solid rgba(34,197,94,0.3);
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+
+  .result-actions { display: flex; gap: 10px; }
+
+  .btn-copy, .btn-new {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .btn-copy {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid var(--border);
+    color: var(--white);
+  }
+  .btn-copy:hover { background: rgba(255,255,255,0.12); }
+
+  .btn-new {
+    background: rgba(245,166,35,0.12);
+    border: 1px solid rgba(245,166,35,0.3);
+    color: var(--gold);
+  }
+  .btn-new:hover { background: rgba(245,166,35,0.2); }
+
+  /* ── RESULT META ────────────────────────────────────────────────── */
+  .result-meta {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+
+  .meta-chip {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    padding: 5px 12px;
+    border-radius: 20px;
+  }
+
+  /* ── TEST CONTENT ──────────────────────────────────────────────── */
+  .test-content {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .test-content-inner {
+    padding: 32px;
+    white-space: pre-wrap;
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.9;
+    color: rgba(255,255,255,0.85);
+    max-height: 600px;
+    overflow-y: auto;
+  }
+
+  /* Custom scrollbar */
+  .test-content-inner::-webkit-scrollbar { width: 6px; }
+  .test-content-inner::-webkit-scrollbar-track { background: transparent; }
+  .test-content-inner::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+
+  .test-footer {
+    padding: 14px 24px;
+    background: rgba(245,166,35,0.05);
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* ── ERROR ─────────────────────────────────────────────────────── */
+  .error-box {
+    display: none;
+    margin-top: 20px;
+    padding: 16px 20px;
+    background: rgba(239,68,68,0.08);
+    border: 1px solid rgba(239,68,68,0.25);
+    border-radius: 12px;
+    font-size: 14px;
+    color: #FCA5A5;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .error-box.visible { display: flex; }
+  .error-box span { line-height: 1.5; }
+
+  /* ── HOW IT WORKS ──────────────────────────────────────────────── */
+  .how-section {
+    padding: 40px 0 100px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.7s;
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    text-align: center;
+    margin-bottom: 12px;
+  }
+
+  .section-heading {
+    font-family: var(--font-head);
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  @media (max-width: 640px) { .steps { grid-template-columns: 1fr; } }
+
+  .step {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px 24px;
+    position: relative;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .step:hover { border-color: rgba(245,166,35,0.3); transform: translateY(-3px); }
+
+  .step-num {
+    font-family: var(--font-head);
+    font-size: 48px;
+    font-weight: 800;
+    color: rgba(245,166,35,0.12);
+    line-height: 1;
+    margin-bottom: 16px;
+  }
+
+  .step-icon { font-size: 28px; margin-bottom: 12px; }
+
+  .step h3 {
+    font-family: var(--font-head);
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--white);
+  }
+
+  .step p { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+  /* ── FOOTER ────────────────────────────────────────────────────── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 40px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  footer strong { color: var(--white); }
+
+  /* ── ANIMATIONS ─────────────────────────────────────────────────── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── WEBHOOK NOTE ──────────────────────────────────────────────── */
+  .webhook-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 14px 16px;
+    background: rgba(245,166,35,0.07);
+    border: 1px solid rgba(245,166,35,0.2);
+    border-radius: 10px;
+    font-size: 13px;
+    color: rgba(245,166,35,0.9);
+    margin-bottom: 28px;
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">
+    <div class="logo-dot"></div>
+    TestGen AI
+  </div>
+  <div class="badge">Beta</div>
+</nav>
+
+<!-- HERO -->
+<div class="wrap">
+  <section class="hero">
+    <div class="hero-eyebrow">Powered by AI</div>
+    <h1>Generate <span>JEE & NEET</span><br>tests in 30 seconds</h1>
+    <p class="hero-sub">Topic-specific, exam-pattern aligned question papers — complete with answer keys and explanations.</p>
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="stat-num">30s</div>
+        <div class="stat-label">Generation time</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">2h</div>
+        <div class="stat-label">Saved per paper</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">90%+</div>
+        <div class="stat-label">Accuracy rate</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FORM -->
+  <section class="form-section">
+    <div class="form-card">
+      <div class="form-header">
+        <div class="form-title">Generate a Test Paper</div>
+        <div class="form-desc">Fill in the details below. Your test will appear on this page instantly.</div>
+      </div>
+
+      <!-- Replace YOUR_N8N_WEBHOOK_URL with your actual webhook URL -->
+      <div class="webhook-note" id="webhookNote">
+        ⚠️ &nbsp;<span>Demo mode — replace <code>YOUR_N8N_WEBHOOK_URL</code> in the page source with your N8N webhook URL to go live.</span>
+      </div>
+
+      <form id="testForm" onsubmit="return false;">
+        <div class="grid-2">
+          <div class="field">
+            <label>Exam Type</label>
+            <select name="exam_type" required>
+              <option value="" disabled selected>Select exam</option>
+              <option value="JEE Mains">JEE Mains</option>
+              <option value="NEET">NEET</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Question Type</label>
+            <select name="question_type" required>
+              <option value="" disabled selected>Select type</option>
+              <option value="MCQ">MCQ (4 options)</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-top: 20px;" class="grid-2">
+          <div class="field">
+            <label>Subject</label>
+            <input type="text" name="subject" placeholder="e.g. Physics" required />
+          </div>
+          <div class="field">
+            <label>Topic</label>
+            <input type="text" name="topic" placeholder="e.g. Thermodynamics" required />
+          </div>
+        </div>
+
+        <div style="margin-top: 20px;" class="grid-2">
+          <div class="field">
+            <label>Difficulty</label>
+            <select name="difficulty" required>
+              <option value="" disabled selected>Select difficulty</option>
+              <option value="Easy">Easy</option>
+              <option value="Moderate">Moderate</option>
+              <option value="Hard">Hard</option>
+              <option value="Mixed">Mixed</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Number of Questions</label>
+            <input type="number" name="num_questions" placeholder="e.g. 10" min="1" max="30" required />
+          </div>
+        </div>
+
+        <div style="margin-top: 20px;" class="field">
+          <label>Teacher Email (optional)</label>
+          <input type="email" name="teacher_email" placeholder="teacher@institute.com" />
+        </div>
+
+        <div class="divider"></div>
+
+        <button type="button" class="btn-generate" id="generateBtn" onclick="generateTest()">
+          <span class="btn-icon">⚡</span>
+          Generate Test Paper
+        </button>
+
+        <div class="loading-bar" id="loadingBar">
+          <div class="loading-bar-inner"></div>
+        </div>
+        <div class="loading-status" id="loadingStatus">
+          <span class="status-dot"></span>
+          AI is generating your test paper — usually takes 20–30 seconds…
+        </div>
+      </form>
+
+      <!-- ERROR -->
+      <div class="error-box" id="errorBox">
+        ⚠️ &nbsp;<span id="errorMsg">Something went wrong. Please try again.</span>
+      </div>
+
+      <!-- RESULT -->
+      <div class="result-section" id="resultSection">
+        <div class="result-header">
+          <div class="result-title-group">
+            <div class="result-title">Generated Test</div>
+            <div class="result-badge">✓ Ready</div>
+          </div>
+          <div class="result-actions">
+            <button class="btn-copy" onclick="copyTest()">📋 Copy</button>
+            <button class="btn-new" onclick="resetForm()">+ New Test</button>
+          </div>
+        </div>
+
+        <div class="result-meta" id="resultMeta"></div>
+
+        <div class="test-content">
+          <div class="test-content-inner" id="testOutput"></div>
+          <div class="test-footer">
+            ✦ Generated by TestGen AI &nbsp;·&nbsp; <span id="resultTime"></span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how-section">
+    <div class="section-label">How it works</div>
+    <h2 class="section-heading">From form to test paper<br>in three steps</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-icon">📝</div>
+        <h3>Fill the form</h3>
+        <p>Select exam type, subject, topic, difficulty, and number of questions. Takes under a minute.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-icon">🤖</div>
+        <h3>AI generates</h3>
+        <p>Our AI builds a custom paper aligned to JEE Mains or NEET exam pattern with full answer key.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-icon">📄</div>
+        <h3>Use immediately</h3>
+        <p>Copy the test, print it, or share it. Every paper is also auto-saved to your institute's account.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <strong>TestGen AI</strong> &nbsp;·&nbsp; Built for JEE & NEET coaching institutes
+  &nbsp;·&nbsp; testgenbud@gmail.com
+</footer>
+
 <script>
+  // ── CONFIG — replace this with your actual N8N webhook URL ──────────────
+  const WEBHOOK_URL = 'https://testgenbud.app.n8n.cloud/webhook/784ad307-2557-47ff-810f-1da294633360';
+  // ────────────────────────────────────────────────────────────────────────
 
-const WEBHOOK_URL = "https://testgenbud.app.n8n.cloud/webhook/784ad307-2557-47ff-810f-1da294633360";
-
-let requestInFlight = false;
-let lastRequestTime = 0;
-
-const REQUEST_TIMEOUT = 45000;
-const MIN_REQUEST_INTERVAL = 3000;
-const MAX_RETRIES = 2;
-
-
-if (WEBHOOK_URL) {
-  document.getElementById("webhookNote").style.display = "none";
-}
-
-
-
-function sanitizeInput(str){
-  if(!str) return "";
-  return str.trim().replace(/[<>]/g,"");
-}
-
-
-
-function validateForm(data){
-
-  const required = ["exam_type","subject","topic","difficulty","question_type","num_questions"];
-
-  for(const key of required){
-    if(!data[key]) return "Please fill in all required fields.";
+  // Hide the demo warning once webhook is set
+  if (WEBHOOK_URL !== 'PLACEHOLDER_NOT_SET') {
+    document.getElementById('webhookNote').style.display = 'none';
   }
 
-  if(data.num_questions < 1 || data.num_questions > 30){
-    return "Number of questions must be between 1 and 30.";
-  }
+  async function generateTest() {
+    const form   = document.getElementById('testForm');
+    const btn    = document.getElementById('generateBtn');
+    const bar    = document.getElementById('loadingBar');
+    const status = document.getElementById('loadingStatus');
+    const result = document.getElementById('resultSection');
+    const error  = document.getElementById('errorBox');
 
-  if(data.subject.length > 80 || data.topic.length > 120){
-    return "Subject or topic too long.";
-  }
+    // Collect form data
+    const data = {
+      exam_type:     form.querySelector('[name=exam_type]').value,
+      subject:       form.querySelector('[name=subject]').value,
+      topic:         form.querySelector('[name=topic]').value,
+      difficulty:    form.querySelector('[name=difficulty]').value,
+      question_type: form.querySelector('[name=question_type]').value,
+      num_questions: form.querySelector('[name=num_questions]').value,
+      teacher_email: form.querySelector('[name=teacher_email]').value,
+    };
 
-  if(data.teacher_email){
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if(!emailRegex.test(data.teacher_email)){
-      return "Invalid email address.";
-    }
-  }
-
-  return null;
-}
-
-
-
-function createTimeoutSignal(timeout){
-  const controller = new AbortController();
-  setTimeout(()=>controller.abort(),timeout);
-  return controller;
-}
-
-
-
-async function fetchWithRetry(url,options,retries=MAX_RETRIES){
-
-  try{
-
-    const controller = createTimeoutSignal(REQUEST_TIMEOUT);
-
-    const res = await fetch(url,{
-      ...options,
-      signal:controller.signal
-    });
-
-    if(!res.ok){
-      throw new Error(`Server returned ${res.status}`);
-    }
-
-    return res;
-
-  }catch(err){
-
-    if(retries > 0){
-      await new Promise(r=>setTimeout(r,1500));
-      return fetchWithRetry(url,options,retries-1);
-    }
-
-    throw err;
-  }
-}
-
-
-
-function parseResponse(text){
-
-  try{
-    const json = JSON.parse(text);
-
-    return (
-      json.generated_test ||
-      json.output ||
-      json.result ||
-      json.data?.generated_test ||
-      (Array.isArray(json) && json[0]?.generated_test) ||
-      (Array.isArray(json) && json[0]?.output) ||
-      text
-    );
-
-  }catch{
-    return text;
-  }
-}
-
-
-
-async function generateTest(){
-
-  if(requestInFlight) return;
-
-  if(Date.now() - lastRequestTime < MIN_REQUEST_INTERVAL){
-    showError("Please wait a few seconds before generating another test.");
-    return;
-  }
-
-  if(!navigator.onLine){
-    showError("You appear to be offline.");
-    return;
-  }
-
-  const form   = document.getElementById("testForm");
-  const btn    = document.getElementById("generateBtn");
-  const bar    = document.getElementById("loadingBar");
-  const status = document.getElementById("loadingStatus");
-  const result = document.getElementById("resultSection");
-  const error  = document.getElementById("errorBox");
-
-
-
-  const data = {
-    exam_type: sanitizeInput(form.exam_type.value),
-    subject: sanitizeInput(form.subject.value),
-    topic: sanitizeInput(form.topic.value),
-    difficulty: sanitizeInput(form.difficulty.value),
-    question_type: sanitizeInput(form.question_type.value),
-    num_questions: Number(form.num_questions.value),
-    teacher_email: sanitizeInput(form.teacher_email.value)
-  };
-
-
-
-  const validationError = validateForm(data);
-
-  if(validationError){
-    showError(validationError);
-    return;
-  }
-
-
-
-  requestInFlight = true;
-  lastRequestTime = Date.now();
-
-
-
-  btn.disabled = true;
-  btn.innerHTML = '<span class="btn-icon">⏳</span> Generating…';
-
-  bar.classList.add("active");
-  status.classList.add("active");
-  result.classList.remove("visible");
-  error.classList.remove("visible");
-
-
-
-  try{
-
-    const response = await fetchWithRetry(
-      WEBHOOK_URL,
-      {
-        method:"POST",
-        headers:{
-          "Content-Type":"application/json"
-        },
-        body:JSON.stringify(data)
+    // Validate
+    const required = ['exam_type','subject','topic','difficulty','question_type','num_questions'];
+    for (const key of required) {
+      if (!data[key]) {
+        showError('Please fill in all required fields.');
+        return;
       }
-    );
-
-
-
-    const text = await response.text();
-    const output = parseResponse(text);
-
-    showResult(output,data);
-
-  }
-  catch(err){
-
-    if(err.name === "AbortError"){
-      showError("Request timed out. The AI server may be overloaded.");
-    }else{
-      showError("Failed to generate test. "+err.message);
     }
 
-  }
-  finally{
+    if (WEBHOOK_URL === 'PLACEHOLDER_NOT_SET') {
+      showError('Webhook URL not configured yet. Replace YOUR_N8N_WEBHOOK_URL in the source code with your N8N webhook URL.');
+      return;
+    }
 
-    requestInFlight = false;
+    // UI: loading state
+    btn.disabled = true;
+    btn.innerHTML = '<span class="btn-icon">⏳</span> Generating…';
+    bar.classList.add('active');
+    status.classList.add('active');
+    result.classList.remove('visible');
+    error.classList.remove('visible');
 
-    btn.disabled = false;
-    btn.innerHTML = '<span class="btn-icon">⚡</span> Generate Test Paper';
+    try {
+      const res = await fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
 
-    bar.classList.remove("active");
-    status.classList.remove("active");
-  }
+      if (!res.ok) throw new Error(`Server returned ${res.status}`);
 
-}
+      const json = await res.json();
 
+      // Extract the generated test — handle different N8N response shapes
+      const testText =
+        json.generated_test ||
+        json.output ||
+        json.result ||
+        (json[0] && json[0].generated_test) ||
+        (json[0] && json[0].output) ||
+        JSON.stringify(json, null, 2);
 
+      showResult(testText, data);
 
-function showResult(text,formData){
-
-  const result = document.getElementById("resultSection");
-  const output = document.getElementById("testOutput");
-  const meta   = document.getElementById("resultMeta");
-  const time   = document.getElementById("resultTime");
-
-  output.textContent = text;
-
-  time.textContent = new Date().toLocaleString("en-IN",{
-    dateStyle:"medium",
-    timeStyle:"short"
-  });
-
-  meta.innerHTML = [
-    formData.exam_type,
-    formData.subject,
-    formData.topic,
-    formData.difficulty,
-    formData.num_questions + " questions"
-  ]
-  .map(v=>`<span class="meta-chip">${v}</span>`)
-  .join("");
-
-  result.classList.add("visible");
-
-  result.scrollIntoView({
-    behavior:"smooth",
-    block:"start"
-  });
-}
-
-
-
-function showError(msg){
-
-  const error = document.getElementById("errorBox");
-  document.getElementById("errorMsg").textContent = msg;
-
-  error.classList.add("visible");
-
-  error.scrollIntoView({
-    behavior:"smooth",
-    block:"nearest"
-  });
-}
-
-
-
-async function copyTest(){
-
-  const text = document.getElementById("testOutput").textContent;
-
-  try{
-
-    await navigator.clipboard.writeText(text);
-
-    const btn = document.querySelector(".btn-copy");
-    btn.textContent = "✓ Copied!";
-
-    setTimeout(()=>{
-      btn.innerHTML = "📋 Copy";
-    },2000);
-
-  }catch{
-    alert("Copy failed. Select text manually.");
+    } catch (err) {
+      showError('Could not reach the test generator. Check your internet connection or N8N webhook URL. Error: ' + err.message);
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<span class="btn-icon">⚡</span> Generate Test Paper';
+      bar.classList.remove('active');
+      status.classList.remove('active');
+    }
   }
 
-}
+  function showResult(text, formData) {
+    const result = document.getElementById('resultSection');
+    const output = document.getElementById('testOutput');
+    const meta   = document.getElementById('resultMeta');
+    const time   = document.getElementById('resultTime');
 
+    output.textContent = text;
+    time.textContent   = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
 
+    meta.innerHTML = [
+      formData.exam_type,
+      formData.subject,
+      formData.topic,
+      formData.difficulty,
+      formData.num_questions + ' questions',
+    ].map(v => `<span class="meta-chip">${v}</span>`).join('');
 
-function resetForm(){
+    result.classList.add('visible');
+    result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 
-  document.getElementById("testForm").reset();
+  function showError(msg) {
+    const error = document.getElementById('errorBox');
+    document.getElementById('errorMsg').textContent = msg;
+    error.classList.add('visible');
+    error.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
 
-  document.getElementById("resultSection").classList.remove("visible");
-  document.getElementById("errorBox").classList.remove("visible");
+  async function copyTest() {
+    const text = document.getElementById('testOutput').textContent;
+    try {
+      await navigator.clipboard.writeText(text);
+      const btn = document.querySelector('.btn-copy');
+      btn.textContent = '✓ Copied!';
+      setTimeout(() => btn.innerHTML = '📋 Copy', 2000);
+    } catch { alert('Select the text and copy manually.'); }
+  }
 
-  window.scrollTo({
-    top:0,
-    behavior:"smooth"
-  });
-
-}
-
+  function resetForm() {
+    document.getElementById('resultSection').classList.remove('visible');
+    document.getElementById('errorBox').classList.remove('visible');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 </script>
+</body>
+</html>
