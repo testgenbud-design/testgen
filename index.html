@@ -832,7 +832,7 @@
   // ────────────────────────────────────────────────────────────────────────
 
   // Hide the demo warning once webhook is set
-  if (WEBHOOK_URL !== 'PLACEHOLDER_NOT_SET') {
+  if (WEBHOOK_URL !== 'https://testgenbud.app.n8n.cloud/webhook/784ad307-2557-47ff-810f-1da294633360') {
     document.getElementById('webhookNote').style.display = 'none';
   }
 
@@ -864,7 +864,7 @@
       }
     }
 
-    if (WEBHOOK_URL === 'PLACEHOLDER_NOT_SET') {
+    if (WEBHOOK_URL === 'https://testgenbud.app.n8n.cloud/webhook/784ad307-2557-47ff-810f-1da294633360') {
       showError('Webhook URL not configured yet. Replace YOUR_N8N_WEBHOOK_URL in the source code with your N8N webhook URL.');
       return;
     }
@@ -886,16 +886,24 @@
 
       if (!res.ok) throw new Error(`Server returned ${res.status}`);
 
-      const json = await res.json();
+      const rawText = await res.text();
 
-      // Extract the generated test — handle different N8N response shapes
-      const testText =
-        json.generated_test ||
-        json.output ||
-        json.result ||
-        (json[0] && json[0].generated_test) ||
-        (json[0] && json[0].output) ||
-        JSON.stringify(json, null, 2);
+      // Try JSON first, fall back to plain text
+      let testText;
+      try {
+        const json = JSON.parse(rawText);
+        testText =
+          json.generated_test ||
+          json.output ||
+          json.result ||
+          (json[0] && json[0].generated_test) ||
+          (json[0] && json[0].output) ||
+          rawText;
+      } catch {
+        testText = rawText;
+      }
+
+      if (!testText || testText.trim() === '') throw new Error('Empty response from server');
 
       showResult(testText, data);
 
